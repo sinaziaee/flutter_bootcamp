@@ -15,7 +15,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   int counter = 4;
 
   List list = [
@@ -46,12 +45,29 @@ class _MyAppState extends State<MyApp> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: bodyMaker(),
+    );
+  }
+
+  Widget bodyMaker() {
+    if (list.isEmpty) {
+      return Center(
+        child: Text(
+          'No Items found',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 25,
+          ),
+        ),
+      );
+    } //
+    else {
+      return SingleChildScrollView(
         child: Column(
           children: columnMaker(),
         ),
-      ),
-    );
+      );
+    }
   }
 
   List<Widget> columnMaker() {
