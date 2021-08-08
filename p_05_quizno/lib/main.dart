@@ -17,7 +17,11 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
+class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin{
+
+  late AnimationController controller;
+  late Animation<double> animation;
+
   late Size size;
 
   int currentQuestionNumber = 0;
@@ -34,6 +38,13 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
       statusList.add(0);
     }
     print(statusList);
+    controller = AnimationController(duration: Duration(seconds: 5), vsync: this);
+    animation = Tween(begin: 0.0, end: 1.0).animate(controller)..addListener(() {
+      setState(() {
+
+      });
+    });
+    controller.repeat();
   }
 
   @override
@@ -57,6 +68,14 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                     border: Border.all(
                       width: 4,
                       color: Colors.grey,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(25),
+                    child: LinearProgressIndicator(
+                      value: animation.value,
+                      backgroundColor: kDarkBlueColor,
+                      valueColor: AlwaysStoppedAnimation(Colors.red),
                     ),
                   ),
                 ),
