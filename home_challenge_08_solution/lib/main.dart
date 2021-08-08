@@ -15,12 +15,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // List<int> list = [
-  //   1,
-  //   2,
-  //   3,
-  //   4,
-  // ];
 
   int counter = 4;
 
