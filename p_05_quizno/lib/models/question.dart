@@ -10,7 +10,10 @@ class Question {
   Question(this.question, this.answer1, this.answer2, this.trueAnswer);
 
   bool isRight(int num) {
-    if (num != 1 || num != 2) {
+    if (num == 1 || num == 2) {
+      // pass
+    }
+    else {
       return false;
     }
     // true answer -> 1

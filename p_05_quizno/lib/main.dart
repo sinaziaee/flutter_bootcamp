@@ -18,8 +18,19 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late Size size;
 
-  int questionNumber = 0;
+  int currentQuestionNumber = 0;
   bool isOnePressed = false;
+
+  List statusList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    for (int i = 0; i < testList.length; i++) {
+      statusList.add(0);
+    }
+    print(statusList);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,23 +74,23 @@ class _MyAppState extends State<MyApp> {
                 SizedBox(
                   height: size.height * 0.025,
                 ),
-                Text(
-                  testList[questionNumber].question,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  height: size.height * 0.25,
+                  child: Text(
+                    testList[currentQuestionNumber].question,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                SizedBox(
-                  height: size.height * 0.15,
-                ),
-                answerContainer(testList[questionNumber].answer1, 1),
+                answerContainer(testList[currentQuestionNumber].answer1, 1),
                 SizedBox(
                   height: size.height * 0.03,
                 ),
-                answerContainer(testList[questionNumber].answer2, 2),
+                answerContainer(testList[currentQuestionNumber].answer2, 2),
                 SizedBox(
                   height: size.height * 0.07,
                 ),
@@ -130,14 +141,33 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget questionContainer(int num) {
+    // statusList -> 0, true, false
+    Color color = Colors.grey;
     int temp = num - 1;
+    int size = testList.length;
+    // if current question and not last question and last question status is not 0
+    if (temp == currentQuestionNumber &&
+        temp != size - 1 &&
+        statusList[size - 1] != 0) {
+      color = kPurpleColor;
+    } //
+    else {
+      if (statusList[temp] == true) {
+        color = Colors.green;
+      } //
+      else if (statusList[temp] == false) {
+        color = Colors.red;
+      } else {
+        // pass
+      }
+    }
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10),
       height: 50,
       width: 50,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: (temp == questionNumber) ? kPurpleColor : Colors.grey,
+        color: color,
       ),
       child: Center(
         child: Text(
@@ -154,17 +184,15 @@ class _MyAppState extends State<MyApp> {
   Widget answerContainer(String answer, int num) {
     return InkWell(
       onTap: () {
-        if(num == 1){
+        if (num == 1) {
           setState(() {
             isOnePressed = true;
           });
-        }
-        else if(num == 2){
+        } else if (num == 2) {
           setState(() {
             isOnePressed = false;
           });
-        }
-        else {
+        } else {
           // handle later
         }
       },
@@ -190,9 +218,41 @@ class _MyAppState extends State<MyApp> {
                   ),
                 ),
               ),
+              // if (num == 1) ...[
+              //   if (isOnePressed) ...[
+              //     Icon(
+              //       Icons.brightness_1_rounded,
+              //       color: kLightBlueColor,
+              //       size: 30,
+              //     ),
+              //   ] else ...[
+              //     Icon(
+              //       Icons.brightness_1_rounded,
+              //       color: Colors.white,
+              //       size: 30,
+              //     ),
+              //   ]
+              // ] else ...[
+              //   if (isOnePressed) ...[
+              //     Icon(
+              //       Icons.brightness_1_rounded,
+              //       color: Colors.white,
+              //       size: 30,
+              //     ),
+              //   ] else ...[
+              //     Icon(
+              //       Icons.brightness_1_rounded,
+              //       color: kLightBlueColor,
+              //       size: 30,
+              //     ),
+              //   ]
+              // ],
+
               Icon(
                 Icons.brightness_1_rounded,
-                color: (isOnePressed && num == 1) ? kLightBlueColor : Colors.white,
+                color: (isOnePressed && num == 1 || !isOnePressed && num == 2)
+                    ? kLightBlueColor
+                    : Colors.white,
                 size: 30,
               ),
             ],
@@ -203,14 +263,20 @@ class _MyAppState extends State<MyApp> {
   }
 
   void onNextPressed() {
-    if (questionNumber + 1 >= 10) {
+    checkAnswer();
+    if (currentQuestionNumber + 1 >= 10) {
       // pass
     } //
     else {
-      setState(() {
-        questionNumber++;
-      });
+      currentQuestionNumber++;
     }
-    print(questionNumber);
+    setState(() {});
+  }
+
+  void checkAnswer() {
+    int myAnswer = (isOnePressed) ? 1 : 2;
+    bool status = testList[currentQuestionNumber].isRight(myAnswer);
+    statusList[currentQuestionNumber] = status;
+    print(statusList);
   }
 }
