@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:p_05_quizno/constants.dart';
 import 'package:p_05_quizno/models/question.dart';
@@ -15,13 +17,15 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
   late Size size;
 
   int currentQuestionNumber = 0;
   bool isOnePressed = false;
 
   List statusList = [];
+
+  double progress = 0;
 
   @override
   void initState() {
@@ -145,13 +149,20 @@ class _MyAppState extends State<MyApp> {
     Color color = Colors.grey;
     int temp = num - 1;
     int size = testList.length;
-    // if current question and not last question and last question status is not 0
-    if (temp == currentQuestionNumber &&
-        temp != size - 1 &&
-        statusList[size - 1] != 0) {
-      color = kPurpleColor;
-    } //
-    else {
+    if (temp == currentQuestionNumber) {
+      if (temp == size - 1 && statusList[temp] != 0) {
+        if (statusList[temp] == true) {
+          color = Colors.green;
+        } //
+        else if (statusList[temp] == false) {
+          color = Colors.red;
+        } else {
+          // pass
+        }
+      } else {
+        color = kPurpleColor;
+      }
+    } else {
       if (statusList[temp] == true) {
         color = Colors.green;
       } //
