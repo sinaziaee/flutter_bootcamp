@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:p_05_quizno/constants.dart';
 import 'package:p_05_quizno/models/question.dart';
@@ -29,22 +27,25 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin{
 
   List statusList = [];
 
-  double progress = 0;
-
   @override
   void initState() {
     super.initState();
     for (int i = 0; i < testList.length; i++) {
       statusList.add(0);
     }
-    print(statusList);
-    controller = AnimationController(duration: Duration(seconds: 5), vsync: this);
+    controller = AnimationController(duration: Duration(seconds: 10), vsync: this);
     animation = Tween(begin: 0.0, end: 1.0).animate(controller)..addListener(() {
       setState(() {
-
+        if((animation.value * 100).round() >= 98){
+          onNextPressed(true);
+          if(controller.isAnimating){
+            controller.reset();
+            controller.forward();
+          }
+        }
       });
     });
-    controller.repeat();
+    controller.forward();
   }
 
   @override
@@ -122,7 +123,9 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin{
                   borderRadius: BorderRadius.circular(20),
                   child: InkWell(
                     onTap: () {
-                      onNextPressed();
+                      controller.reset();
+                      onNextPressed(false);
+                      controller.forward();
                     },
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
@@ -248,36 +251,6 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin{
                   ),
                 ),
               ),
-              // if (num == 1) ...[
-              //   if (isOnePressed) ...[
-              //     Icon(
-              //       Icons.brightness_1_rounded,
-              //       color: kLightBlueColor,
-              //       size: 30,
-              //     ),
-              //   ] else ...[
-              //     Icon(
-              //       Icons.brightness_1_rounded,
-              //       color: Colors.white,
-              //       size: 30,
-              //     ),
-              //   ]
-              // ] else ...[
-              //   if (isOnePressed) ...[
-              //     Icon(
-              //       Icons.brightness_1_rounded,
-              //       color: Colors.white,
-              //       size: 30,
-              //     ),
-              //   ] else ...[
-              //     Icon(
-              //       Icons.brightness_1_rounded,
-              //       color: kLightBlueColor,
-              //       size: 30,
-              //     ),
-              //   ]
-              // ],
-
               Icon(
                 Icons.brightness_1_rounded,
                 color: (isOnePressed && num == 1 || !isOnePressed && num == 2)
@@ -292,10 +265,16 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin{
     );
   }
 
-  void onNextPressed() {
-    checkAnswer();
+  void onNextPressed(bool isFromTimer) {
+    if(isFromTimer == true){
+      statusList[currentQuestionNumber] = false;
+    }
+    else{
+      checkAnswer();
+    }
     if (currentQuestionNumber + 1 >= 10) {
-      // pass
+      controller.reset();
+      controller.dispose();
     } //
     else {
       currentQuestionNumber++;
@@ -307,6 +286,35 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin{
     int myAnswer = (isOnePressed) ? 1 : 2;
     bool status = testList[currentQuestionNumber].isRight(myAnswer);
     statusList[currentQuestionNumber] = status;
-    print(statusList);
   }
 }
+
+// if (num == 1) ...[
+//   if (isOnePressed) ...[
+//     Icon(
+//       Icons.brightness_1_rounded,
+//       color: kLightBlueColor,
+//       size: 30,
+//     ),
+//   ] else ...[
+//     Icon(
+//       Icons.brightness_1_rounded,
+//       color: Colors.white,
+//       size: 30,
+//     ),
+//   ]
+// ] else ...[
+//   if (isOnePressed) ...[
+//     Icon(
+//       Icons.brightness_1_rounded,
+//       color: Colors.white,
+//       size: 30,
+//     ),
+//   ] else ...[
+//     Icon(
+//       Icons.brightness_1_rounded,
+//       color: kLightBlueColor,
+//       size: 30,
+//     ),
+//   ]
+// ],
