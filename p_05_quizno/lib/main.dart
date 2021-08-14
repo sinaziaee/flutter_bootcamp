@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:p_05_quizno/constants.dart';
 import 'package:p_05_quizno/models/question.dart';
+import 'package:p_05_quizno/screens/result_screen.dart';
 
 void main() {
   runApp(
@@ -15,8 +16,7 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin{
-
+class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late Animation<double> animation;
 
@@ -33,18 +33,20 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin{
     for (int i = 0; i < testList.length; i++) {
       statusList.add(0);
     }
-    controller = AnimationController(duration: Duration(seconds: 10), vsync: this);
-    animation = Tween(begin: 0.0, end: 1.0).animate(controller)..addListener(() {
-      setState(() {
-        if((animation.value * 100).round() >= 98){
-          onNextPressed(true);
-          if(controller.isAnimating){
-            controller.reset();
-            controller.forward();
+    controller =
+        AnimationController(duration: Duration(seconds: 10), vsync: this);
+    animation = Tween(begin: 0.0, end: 1.0).animate(controller)
+      ..addListener(() {
+        setState(() {
+          if ((animation.value * 100).round() >= 98) {
+            onNextPressed(true);
+            if (controller.isAnimating) {
+              controller.reset();
+              controller.forward();
+            }
           }
-        }
+        });
       });
-    });
     controller.forward();
   }
 
@@ -53,6 +55,12 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin{
     size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: kDarkBlueColor,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          my_navigator();
+        },
+        child: Icon(Icons.nat),
+      ),
       body: SafeArea(
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: 30),
@@ -266,15 +274,13 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin{
   }
 
   void onNextPressed(bool isFromTimer) {
-    if(isFromTimer == true){
+    if (isFromTimer == true) {
       statusList[currentQuestionNumber] = false;
-    }
-    else{
+    } else {
       checkAnswer();
     }
     if (currentQuestionNumber + 1 >= 10) {
-      controller.reset();
-      controller.dispose();
+      my_navigator();
     } //
     else {
       currentQuestionNumber++;
@@ -287,34 +293,36 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin{
     bool status = testList[currentQuestionNumber].isRight(myAnswer);
     statusList[currentQuestionNumber] = status;
   }
-}
 
-// if (num == 1) ...[
-//   if (isOnePressed) ...[
-//     Icon(
-//       Icons.brightness_1_rounded,
-//       color: kLightBlueColor,
-//       size: 30,
-//     ),
-//   ] else ...[
-//     Icon(
-//       Icons.brightness_1_rounded,
-//       color: Colors.white,
-//       size: 30,
-//     ),
-//   ]
-// ] else ...[
-//   if (isOnePressed) ...[
-//     Icon(
-//       Icons.brightness_1_rounded,
-//       color: Colors.white,
-//       size: 30,
-//     ),
-//   ] else ...[
-//     Icon(
-//       Icons.brightness_1_rounded,
-//       color: kLightBlueColor,
-//       size: 30,
-//     ),
-//   ]
-// ],
+  void my_navigator() {
+    // stopping timer
+    controller.reset();
+    controller.dispose();
+    // calculate user grade
+    List<int> resultList = grader();
+    // navigate to result screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return ResultScreen(resultList);
+      }),
+    );
+  }
+
+  List<int> grader() {
+    int rightAnswers = 0;
+    int wrongAnswers = 0;
+    int whiteAnswers = 0;
+
+    for (var each in statusList) {
+      if (each == true) {
+        rightAnswers++;
+      } else if (each == false) {
+        wrongAnswers++;
+      } else {
+        whiteAnswers++;
+      }
+    }
+    return [rightAnswers, wrongAnswers, whiteAnswers];
+  }
+}
