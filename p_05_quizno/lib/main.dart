@@ -294,19 +294,29 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     statusList[currentQuestionNumber] = status;
   }
 
-  void my_navigator() {
+  void my_navigator() async{
     // stopping timer
     controller.reset();
-    controller.dispose();
     // calculate user grade
     List<int> resultList = grader();
     // navigate to result screen
-    Navigator.push(
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) {
         return ResultScreen(resultList);
       }),
     );
+
+    reseter();
+
+    // Navigator.pop(context);
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) {
+    //     return ResultScreen(resultList);
+    //   }),
+    // );
+
   }
 
   List<int> grader() {
@@ -325,4 +335,16 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     }
     return [rightAnswers, wrongAnswers, whiteAnswers];
   }
+
+  void reseter(){
+    currentQuestionNumber = 0;
+    isOnePressed = false;
+    statusList.clear();
+    for(int i=0;i<testList.length;i++){
+      statusList.add(0);
+    }
+    controller.forward();
+    setState(() {});
+  }
+
 }
