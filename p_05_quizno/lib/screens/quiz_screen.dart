@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:p_05_quizno/models/question.dart';
 import 'package:p_05_quizno/models/question_db.dart';
+import 'package:p_05_quizno/widgets/animation_bar.dart';
+import 'package:p_05_quizno/widgets/answer_container.dart';
+import 'package:p_05_quizno/widgets/custom_button.dart';
 import 'package:p_05_quizno/widgets/question_container.dart';
+import 'package:p_05_quizno/widgets/question_list_row.dart';
 
 import '../constants.dart';
 import 'result_screen.dart';
@@ -27,7 +31,6 @@ class _QuizScreenState extends State<QuizScreen>
 
   @override
   void initState() {
-
     super.initState();
     for (int i = 0; i < db.getSize(); i++) {
       statusList.add(0);
@@ -69,23 +72,8 @@ class _QuizScreenState extends State<QuizScreen>
                 SizedBox(
                   height: size.height * 0.07,
                 ),
-                Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(
-                      width: 4,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(25),
-                    child: LinearProgressIndicator(
-                      value: animation.value,
-                      backgroundColor: kDarkBlueColor,
-                      valueColor: AlwaysStoppedAnimation(Colors.red),
-                    ),
-                  ),
+                MyAnimationBar(
+                  animation.value,
                 ),
                 SizedBox(
                   height: size.height * 0.05,
@@ -93,9 +81,7 @@ class _QuizScreenState extends State<QuizScreen>
                 SingleChildScrollView(
                   controller: scrollController,
                   scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: questionListRow(),
-                  ),
+                  child: QuestionListRow(currentQuestionNumber, statusList),
                 ),
                 SizedBox(
                   height: size.height * 0.025,
@@ -118,108 +104,41 @@ class _QuizScreenState extends State<QuizScreen>
                     ),
                   ),
                 ),
-                answerContainer(db.getQuestion(currentQuestionNumber).answer1, 1),
+                AnswerContainer(
+                  (isOnePressed) ? kLightBlueColor : Colors.white,
+                  db.getQuestion(currentQuestionNumber).answer1,
+                  () {
+                    onAnswerPressed(1);
+                  },
+                ),
                 SizedBox(
                   height: size.height * 0.03,
                 ),
-                answerContainer(db.getQuestion(currentQuestionNumber).answer2, 2),
+                AnswerContainer(
+                  (!isOnePressed) ? kLightBlueColor : Colors.white,
+                  db.getQuestion(currentQuestionNumber).answer2,
+                  () {
+                    onAnswerPressed(2);
+                  },
+                ),
                 SizedBox(
                   height: size.height * 0.07,
                 ),
-                Material(
-                  color: kLightBlueColor,
-                  borderRadius: BorderRadius.circular(20),
-                  child: InkWell(
-                    onTap: () {
-                      controller.reset();
-                      onNextPressed(false);
-                      controller.forward();
-                    },
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      width: 150,
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Next',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                CustomButton(
+                  kLightBlueColor,
+                  'Next',
+                  () {
+                    controller.reset();
+                    onNextPressed(false);
+                    controller.forward();
+                  },
+                  150,
                 ),
                 SizedBox(
                   height: size.height * 0.05,
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  List<Widget> questionListRow() {
-    List<Widget> widgetsList = [];
-    for (int i = 0; i < db.getSize(); i++) {
-      widgetsList
-          .add(QuestionContainer(i + 1, statusList, currentQuestionNumber, db.getSize()));
-    }
-    return widgetsList;
-  }
-
-  Widget answerContainer(String answer, int num) {
-    return InkWell(
-      onTap: () {
-        if (num == 1) {
-          setState(() {
-            isOnePressed = true;
-          });
-        } else if (num == 2) {
-          setState(() {
-            isOnePressed = false;
-          });
-        } else {
-          // handle later
-        }
-      },
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: EdgeInsets.only(left: 20, right: 10, top: 10, bottom: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            width: 4,
-            color: Colors.blue.shade800,
-          ),
-        ),
-        child: Center(
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  '$answer',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-              Icon(
-                Icons.brightness_1_rounded,
-                color: (isOnePressed && num == 1 || !isOnePressed && num == 2)
-                    ? kLightBlueColor
-                    : Colors.white,
-                size: 30,
-              ),
-            ],
           ),
         ),
       ),
@@ -262,16 +181,7 @@ class _QuizScreenState extends State<QuizScreen>
         return ResultScreen(resultList);
       }),
     );
-
     reseter();
-
-    // Navigator.pop(context);
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) {
-    //     return ResultScreen(resultList);
-    //   }),
-    // );
   }
 
   List<int> grader() {
@@ -302,5 +212,19 @@ class _QuizScreenState extends State<QuizScreen>
     scrollController.animateTo(currentQuestionNumber * 50.0,
         duration: Duration(milliseconds: 500), curve: Curves.ease);
     setState(() {});
+  }
+
+  void onAnswerPressed(int num) {
+    if (num == 1) {
+      setState(() {
+        isOnePressed = true;
+      });
+    } else if (num == 2) {
+      setState(() {
+        isOnePressed = false;
+      });
+    } else {
+      // handle later
+    }
   }
 }
