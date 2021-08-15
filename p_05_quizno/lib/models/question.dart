@@ -1,13 +1,40 @@
 class Question {
-  String question;
-  String answer1;
-  String answer2;
+  String _question;
+  String _answer1;
+  String _answer2;
 
   // right answer 1-> answer1, 2-> answer2
-  int trueAnswer;
+  int _trueAnswer;
 
   // constructor
-  Question(this.question, this.answer1, this.answer2, this.trueAnswer);
+  Question(this._question, this._answer1, this._answer2, this._trueAnswer);
+
+  String get answer1 {
+    return _answer1;
+  }
+
+  String get answer2 {
+    return _answer2;
+  }
+
+  String get question => _question;
+
+
+  set question(String value) {
+    _question = value;
+  }
+
+  set answer1(String value) {
+    _answer1 = value;
+  }
+
+  set answer2(String value) {
+    _answer2 = value;
+  }
+
+  set trueAnswer(int value) {
+    _trueAnswer = value;
+  }
 
   bool isRight(int num) {
     if (num == 1 || num == 2) {
@@ -17,7 +44,7 @@ class Question {
       return false;
     }
     // true answer -> 1
-    if (trueAnswer == 1) {
+    if (_trueAnswer == 1) {
       if (num == 1) {
         return true;
       } //
@@ -34,36 +61,5 @@ class Question {
       }
     }
   }
-}
 
-List<Question> testList = [
-  Question('Is ocean blue?', 'Yes', 'No', 1),
-  Question('What year second world war started ?', '1940', '1939', 2),
-  Question('What year second world war finished ?', '1945', '1944', 1),
-  Question('What is the name of the best movie ranked by IMDB ?',
-      'The Godfather', 'The Shawshank Redemption', 2),
-  Question(
-      'For what movie did Tom Hanks score his first Academy Award nomination?',
-      'Sleepless in Seatle',
-      'Big',
-      2),
-  Question(
-      'What American writer/director starred in several iconic European-produced “Spaghetti Westerns“?',
-      'Clint Eastwood',
-      'Henry Fonda',
-      1),
-  Question('What Hollywood movie star plays himself in Zombieland?',
-      'Bill Murray', 'Emma Stone', 1),
-  Question('What is the highest-grossing R-rated movie of all time?', 'Joker',
-      'Pulp Fiction', 1),
-  Question(
-      'Which movie was incorrectly announced as the winner of Best Picture at the 2017 Academy Awards, during the greatest Oscars flub of all time?',
-      'La La Land',
-      'Rope',
-      1),
-  Question(
-      'The stage play Everybody Comes to Rick’s was adapted for the screen to become what 1942 Best Picture winner?',
-      'La La Land',
-      'Casablanca',
-      2),
-];
+}

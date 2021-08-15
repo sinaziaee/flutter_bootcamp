@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:p_05_quizno/models/question.dart';
+import 'package:p_05_quizno/models/question_db.dart';
 import 'package:p_05_quizno/widgets/question_container.dart';
 
 import '../constants.dart';
@@ -10,21 +11,25 @@ class QuizScreen extends StatefulWidget {
   _QuizScreenState createState() => _QuizScreenState();
 }
 
-class _QuizScreenState extends State<QuizScreen> with SingleTickerProviderStateMixin {
+class _QuizScreenState extends State<QuizScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late Animation<double> animation;
 
   late Size size;
 
+  ScrollController scrollController = ScrollController();
+
   int currentQuestionNumber = 0;
   bool isOnePressed = false;
-
+  QuestionDb db = QuestionDb();
   List statusList = [];
 
   @override
   void initState() {
+
     super.initState();
-    for (int i = 0; i < testList.length; i++) {
+    for (int i = 0; i < db.getSize(); i++) {
       statusList.add(0);
     }
     controller =
@@ -86,6 +91,7 @@ class _QuizScreenState extends State<QuizScreen> with SingleTickerProviderStateM
                   height: size.height * 0.05,
                 ),
                 SingleChildScrollView(
+                  controller: scrollController,
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: questionListRow(),
@@ -103,7 +109,7 @@ class _QuizScreenState extends State<QuizScreen> with SingleTickerProviderStateM
                 Container(
                   height: size.height * 0.25,
                   child: Text(
-                    testList[currentQuestionNumber].question,
+                    db.getQuestion(currentQuestionNumber).question,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
@@ -112,11 +118,11 @@ class _QuizScreenState extends State<QuizScreen> with SingleTickerProviderStateM
                     ),
                   ),
                 ),
-                answerContainer(testList[currentQuestionNumber].answer1, 1),
+                answerContainer(db.getQuestion(currentQuestionNumber).answer1, 1),
                 SizedBox(
                   height: size.height * 0.03,
                 ),
-                answerContainer(testList[currentQuestionNumber].answer2, 2),
+                answerContainer(db.getQuestion(currentQuestionNumber).answer2, 2),
                 SizedBox(
                   height: size.height * 0.07,
                 ),
@@ -162,8 +168,9 @@ class _QuizScreenState extends State<QuizScreen> with SingleTickerProviderStateM
 
   List<Widget> questionListRow() {
     List<Widget> widgetsList = [];
-    for (int i = 0; i < testList.length; i++) {
-      widgetsList.add(QuestionContainer(i+1, statusList, currentQuestionNumber));
+    for (int i = 0; i < db.getSize(); i++) {
+      widgetsList
+          .add(QuestionContainer(i + 1, statusList, currentQuestionNumber, db.getSize()));
     }
     return widgetsList;
   }
@@ -220,6 +227,9 @@ class _QuizScreenState extends State<QuizScreen> with SingleTickerProviderStateM
   }
 
   void onNextPressed(bool isFromTimer) {
+    scrollController.animateTo(currentQuestionNumber * 50.0,
+        duration: Duration(milliseconds: 500), curve: Curves.ease);
+
     if (isFromTimer == true) {
       statusList[currentQuestionNumber] = false;
     } else {
@@ -236,7 +246,7 @@ class _QuizScreenState extends State<QuizScreen> with SingleTickerProviderStateM
 
   void checkAnswer() {
     int myAnswer = (isOnePressed) ? 1 : 2;
-    bool status = testList[currentQuestionNumber].isRight(myAnswer);
+    bool status = db.getQuestion(currentQuestionNumber).isRight(myAnswer);
     statusList[currentQuestionNumber] = status;
   }
 
@@ -285,10 +295,12 @@ class _QuizScreenState extends State<QuizScreen> with SingleTickerProviderStateM
     currentQuestionNumber = 0;
     isOnePressed = false;
     statusList.clear();
-    for (int i = 0; i < testList.length; i++) {
+    for (int i = 0; i < db.getSize(); i++) {
       statusList.add(0);
     }
     controller.forward();
+    scrollController.animateTo(currentQuestionNumber * 50.0,
+        duration: Duration(milliseconds: 500), curve: Curves.ease);
     setState(() {});
   }
 }

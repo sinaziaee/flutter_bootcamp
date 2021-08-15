@@ -8,19 +8,19 @@ class QuestionContainer extends StatelessWidget {
   final int num;
   final List statusList;
   final int currentQuestionNumber;
+  final int testListSize;
 
-  QuestionContainer(this.num, this.statusList, this.currentQuestionNumber);
+  QuestionContainer(this.num, this.statusList, this.currentQuestionNumber, this.testListSize);
 
   // statusList -> 0, true, false
   Color color = Colors.grey;
   int temp = 0;
-  int size = testList.length;
 
   @override
   Widget build(BuildContext context) {
     temp = num - 1;
     if (temp == currentQuestionNumber) {
-      if (temp == size - 1 && statusList[temp] != 0) {
+      if (temp == testListSize - 1 && statusList[temp] != 0) {
         if (statusList[temp] == true) {
           color = Colors.green;
         } //
