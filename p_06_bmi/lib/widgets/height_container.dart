@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:p_06_bmi/constants.dart';
 
-import 'base_container.dart';
+import 'base/base_container.dart';
 
 class HeightContainer extends StatelessWidget {
   final double height;

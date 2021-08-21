@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:p_06_bmi/screens/result_screen.dart';
 
-import 'custom_button.dart';
+import '../custom_button.dart';
 
 class BaseScreen extends StatelessWidget {
   final Widget childWidget;

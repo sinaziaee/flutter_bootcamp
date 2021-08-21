@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:p_06_bmi/screens/result_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:p_06_bmi/widgets/base_screen.dart';
+import 'package:p_06_bmi/widgets/base/base_screen.dart';
 import 'package:p_06_bmi/widgets/custom_button.dart';
 import 'package:p_06_bmi/widgets/gender_container.dart';
 import 'package:p_06_bmi/widgets/height_container.dart';
@@ -31,7 +31,12 @@ class _HomeScreenState extends State<HomeScreen> {
           context,
           MaterialPageRoute(
             builder: (context) {
+              List result = bmiCalculator();
               return ResultScreen(
+                bmi: result[0].toString(),
+                status: result[1],
+                statusColor: result[2],
+                tip: result[3],
               );
             },
           ),
@@ -160,4 +165,31 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
+
+  List bmiCalculator(){
+    double bmi = 0;
+    String tip;
+    Color statusColor;
+    String status;
+    bmi = weight / pow((height/100), 2);
+    if(bmi >= 18.5 && bmi <= 25){
+      status = 'Normal';
+      statusColor = Colors.greenAccent;
+      tip = 'You have a Normal body weight. Good job!';
+    }
+    else if(bmi < 18.5){
+      status = 'Under Weight';
+      tip = 'You have a low body weight. Try to eat more!';
+      statusColor = Colors.red;
+    }
+    else{
+      status = 'Over Weight';
+      tip = 'You have a high body weight. Try to eat less!';
+      statusColor = Colors.red;
+    }
+
+    return [bmi, status, statusColor, tip];
+
+  }
+
 }
