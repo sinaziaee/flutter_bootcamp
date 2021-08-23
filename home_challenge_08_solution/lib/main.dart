@@ -18,15 +18,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int counter = 4;
-
-  List list = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,12 +26,9 @@ class _MyAppState extends State<MyApp> {
         backgroundColor: Colors.blueGrey[400],
         actions: [
           IconButton(
-            onPressed: () {
-              setState(() {
-                counter++;
-                list.add('Item $counter');
-                add();
-              });
+            onPressed: () async {
+              await add();
+              setState(() {});
             },
             icon: Icon(
               Icons.add,
@@ -49,11 +37,27 @@ class _MyAppState extends State<MyApp> {
           ),
         ],
       ),
-      body: bodyMaker(),
+      body: FutureBuilder(
+        future: loadData(),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData &&
+              snapshot.connectionState == ConnectionState.done) {
+            print(snapshot.data);
+            List<String> resultList = snapshot.data;
+            int counter = resultList.length;
+            return bodyMaker(resultList, counter);
+          } //
+          else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
     );
   }
 
-  Widget bodyMaker() {
+  Widget bodyMaker(List<String> list, int count) {
     if (list.isEmpty) {
       return Center(
         child: Text(
@@ -70,24 +74,51 @@ class _MyAppState extends State<MyApp> {
         itemBuilder: (BuildContext context, int index) {
           return BodyContainer(
             item: list[index],
-            onDeletePressed: () {
-              setState(() {
-                list.remove(list[index]);
-              });
+            onDeletePressed: () async {
+              await delete(list[index]);
+              setState(() {});
             },
           );
         },
-        itemCount: list.length,
+        itemCount: count,
       );
     }
   }
 
-  void add() async {
-    counter++;
+  Future<bool> add() async {
+    try {
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      int counter = pref.getInt('counter') ?? 0;
+      counter++;
+      List<String> itemList = pref.getStringList('items') ?? [];
+      itemList.add('item $counter');
+      await pref.setInt('counter', counter);
+      await pref.setStringList('items', itemList);
+      print(pref.getInt('counter') ?? 0);
+      print(pref.getStringList('items') ?? 0);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  Future<List<String>> loadData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    await pref.setString(counter.toString(), 'item $counter');
-    for (var each in pref.getKeys()) {
-      print(each);
+    List<String> itemList = pref.getStringList('items') ?? [];
+    return itemList;
+  }
+
+  Future<bool> delete(String item) async {
+    try {
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      List<String> itemList = pref.getStringList('items') ?? [];
+      itemList.remove(item);
+      await pref.setStringList('items', itemList);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
     }
   }
 }
