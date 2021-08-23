@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:home_challenge_08_solution/widgets/column_maker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'widgets/body_container.dart';
 
 void main() {
   runApp(
@@ -37,6 +39,7 @@ class _MyAppState extends State<MyApp> {
               setState(() {
                 counter++;
                 list.add('Item $counter');
+                add();
               });
             },
             icon: Icon(
@@ -46,19 +49,45 @@ class _MyAppState extends State<MyApp> {
           ),
         ],
       ),
-      body: ColumnMaker(
-        list: list,
-        onDeletePressed: (item) {
-          deleter(item);
-        },
-      ),
+      body: bodyMaker(),
     );
   }
 
-  void deleter(String item) {
-    setState(() {
-      list.remove(item);
-      // list.removeAt(item);
-    });
+  Widget bodyMaker() {
+    if (list.isEmpty) {
+      return Center(
+        child: Text(
+          'No Items found',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 25,
+          ),
+        ),
+      );
+    } //
+    else {
+      return ListView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          return BodyContainer(
+            item: list[index],
+            onDeletePressed: () {
+              setState(() {
+                list.remove(list[index]);
+              });
+            },
+          );
+        },
+        itemCount: list.length,
+      );
+    }
+  }
+
+  void add() async {
+    counter++;
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    await pref.setString(counter.toString(), 'item $counter');
+    for (var each in pref.getKeys()) {
+      print(each);
+    }
   }
 }

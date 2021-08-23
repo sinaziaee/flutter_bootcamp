@@ -1,46 +1,38 @@
 import 'package:flutter/material.dart';
 
 class BodyContainer extends StatelessWidget {
+  final VoidCallback onDeletePressed;
+  final String item;
 
-  final Function(String item) onDeletePressed;
-  final String text;
-
-  BodyContainer({required this.text, required this.onDeletePressed});
+  BodyContainer({required this.onDeletePressed, required this.item});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.yellowAccent,
-      padding: EdgeInsets.symmetric(vertical: 5),
-      margin: EdgeInsets.symmetric(vertical: 3),
-      child: Center(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 20,
-            ),
-            IconButton(
-              onPressed: onDeletePressed(text),
-              iconSize: 60,
-              icon: Icon(
-                Icons.cancel,
-                color: Colors.red,
-              ),
-            ),
-            Spacer(),
-            Text(
-              text,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-              ),
-            ),
-            SizedBox(
-              width: 20,
-            ),
-          ],
+    return Card(
+      elevation: 10,
+      color: Colors.white,
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: ListTile(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
         ),
+        onTap: () {
+          print('tapped');
+        },
+        onLongPress: () {
+          print('pressed for long time');
+        },
+        leading: IconButton(
+          onPressed: onDeletePressed,
+          icon: Icon(
+            Icons.cancel,
+            color: Colors.red,
+          ),
+        ),
+        trailing: Text(item),
       ),
     );
   }
