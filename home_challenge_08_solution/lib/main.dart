@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_challenge_08_solution/screens/file_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'widgets/body_container.dart';
@@ -18,12 +19,40 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late SharedPreferences pref;
+
+  @override
+  void initState() {
+    super.initState();
+    myInitilizer();
+  }
+
+  myInitilizer() async{
+    pref = await SharedPreferences.getInstance();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey,
       appBar: AppBar(
         backgroundColor: Colors.blueGrey[400],
+        leading: IconButton(
+          onPressed: () async {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) {
+                  return FileScreen();
+                },
+              ),
+            );
+          },
+          icon: Icon(
+            Icons.storage,
+            color: Colors.white,
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () async {
@@ -87,7 +116,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<bool> add() async {
     try {
-      SharedPreferences pref = await SharedPreferences.getInstance();
+      pref = await SharedPreferences.getInstance();
       int counter = pref.getInt('counter') ?? 0;
       counter++;
       List<String> itemList = pref.getStringList('items') ?? [];
@@ -104,14 +133,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<List<String>> loadData() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref = await SharedPreferences.getInstance();
     List<String> itemList = pref.getStringList('items') ?? [];
     return itemList;
   }
 
   Future<bool> delete(String item) async {
     try {
-      SharedPreferences pref = await SharedPreferences.getInstance();
+      pref = await SharedPreferences.getInstance();
       List<String> itemList = pref.getStringList('items') ?? [];
       itemList.remove(item);
       await pref.setStringList('items', itemList);
