@@ -5,13 +5,20 @@ import 'package:p_07/models/todo.dart';
 class TodoScreen extends StatelessWidget {
   final String type;
   final TextEditingController textEditingController = TextEditingController();
+  Todo todo;
+  final int index;
 
   TodoScreen({
     required this.type,
+    required this.todo,
+    required this.index,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (type == 'update') {
+      textEditingController.text = todo.text;
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text('$type Todo'),
@@ -61,7 +68,12 @@ class TodoScreen extends StatelessWidget {
 
   onButtonPressed() {
     String value = textEditingController.text;
-    add(text: value, priority: 5);
+    if(type == 'add'){
+      add(text: value, priority: 5);
+    }
+    else {
+      update(text: value, priority: 2);
+    }
   }
 
   add({required String text, required int priority}) async {
@@ -73,5 +85,7 @@ class TodoScreen extends StatelessWidget {
 
   update({required String text, required int priority}) async {
     var box = await Hive.openBox('todo');
+    Todo todo = Todo(priority: priority, text: text);
+    await box.putAt(index, todo);
   }
 }
