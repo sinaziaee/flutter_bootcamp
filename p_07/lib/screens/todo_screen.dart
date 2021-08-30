@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:p_07/models/todo.dart';
 
 class TodoScreen extends StatelessWidget {
   final String type;
@@ -57,9 +59,19 @@ class TodoScreen extends StatelessWidget {
     );
   }
 
-  onButtonPressed(){
+  onButtonPressed() {
     String value = textEditingController.text;
-    print(value);
+    add(text: value, priority: 5);
   }
 
+  add({required String text, required int priority}) async {
+    var box = await Hive.openBox('todo');
+    Todo todo = Todo(priority: priority, text: text);
+    int result = await box.add(todo);
+    print(result);
+  }
+
+  update({required String text, required int priority}) async {
+    var box = await Hive.openBox('todo');
+  }
 }

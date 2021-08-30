@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:p_07/screens/todo_screen.dart';
 import 'package:p_07/widgets/custom_circular_progress.dart';
 
@@ -41,9 +42,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  loadData(){
+  Future<Box> loadData(){
     // todo: complete this later
-    return null;
+    return Hive.openBox('todo');
   }
 
 }
