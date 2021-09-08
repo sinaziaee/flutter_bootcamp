@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:p_08_api_connections/models/post.dart';
-import 'package:p_08_api_connections/screens/add_post_screen.dart';
+import 'package:p_08_api_connections/screens/post_screen.dart';
+import 'package:http/http.dart' as http;
+
+import '../constants.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -20,8 +23,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Icon(Icons.add),
         onPressed: () {
           navigate(
-            'add',
+            'Add',
             Post(
+              id: -1,
               imageUrl: '',
               description: '',
               title: '',
@@ -43,38 +47,25 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  loadData() {}
+  loadData() async {
+    http.Response response = await http.get(
+      Uri.parse('$kBaseUrl/api/post/all/'),
+    );
+    print(response.statusCode);
+    print(response.body);
+  }
 
   navigate(String type, Post post) {
-    if (type.toLowerCase() == 'add') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return AddPostScreen(
-              post: Post(
-                title: '',
-                description: '',
-                imageUrl: '',
-              ),
-              type: type,
-            );
-          },
-        ),
-      );
-    } //
-    else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return AddPostScreen(
-              post: post,
-              type: type,
-            );
-          },
-        ),
-      );
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return AddPostScreen(
+            post: post,
+            type: type,
+          );
+        },
+      ),
+    );
   }
 }

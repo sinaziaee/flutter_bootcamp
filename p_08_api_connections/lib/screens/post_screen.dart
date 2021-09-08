@@ -43,7 +43,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Add Post',
+          '${widget.type} Post',
         ),
       ),
       body: SingleChildScrollView(
@@ -69,7 +69,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 },
                 child: CircleAvatar(
                   child: Icon(
-                    Icons.add,
+                      (widget.type == 'Add') ? Icons.add : Icons.edit,
                   ),
                 ),
               ),
@@ -115,7 +115,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
               ElevatedButton(
                 onPressed: () {},
                 child: Text(
-                  'Submit',
+                  '${widget.type}',
                 ),
               ),
               SizedBox(
