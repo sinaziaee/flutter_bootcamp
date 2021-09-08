@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:p_08_api_connections/constants.dart';
 import 'package:p_08_api_connections/screens/sign_up_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../constant_methods.dart';
+import 'homescreen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -15,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     usernameController = TextEditingController();
     passwordController = TextEditingController();
+    checkTokenExistence();
     super.initState();
   }
 
@@ -29,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register Screen'),
+        title: Text('Login Screen'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -65,7 +72,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Text('Login'),
               ),
               TextButton(
-                onPressed: gotoRegisterScreen,
+                onPressed: () {
+                  kNavigate(context, 'register', '-1');
+                },
                 child: Text(
                   'goto register',
                 ),
@@ -77,16 +86,53 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void login() {}
+  void login() async {
+    String username = usernameController.text;
+    String password = passwordController.text;
 
-  void gotoRegisterScreen() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return SignUpScreen();
-        },
-      ),
+    if (username.length == 0 || password.length == 0) {
+      print('username or password is null');
+      return;
+    }
+
+    // 200 <= statusCode < 300 -> everything is OK
+    // 300 <= statusCode < 400 -> redirect
+    // 400 <= statusCode < 500 -> a problem from user side
+    // 500 <= statusCode  -> a problem from server side
+
+    print('requested page: $kBaseUrl/api/login/');
+
+    http.Response response = await http.post(
+      Uri.parse('$kBaseUrl/api/login/'),
+      body: convert.json.encode({
+        'username': username,
+        'password': password,
+      }),
+      headers: {
+        "Accept": "application/json",
+        "content-type": "application/json",
+      },
     );
+    print(response.statusCode);
+    Map responseMap = convert.json.decode(response.body);
+    print(responseMap);
+    String token = await kSaveToLocal(responseMap, 'user_name');
+    if (token != '-1') {
+      kNavigate(context, 'home', token);
+    }
+  }
+
+  void checkTokenExistence() async {
+    try {
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      if (pref.containsKey('token')) {
+        String token = pref.getString('token') ?? '-1';
+        kNavigate(context, 'home', token);
+      }
+    } catch (e) {
+      print(e);
+      return;
+    }
+    return;
   }
 }

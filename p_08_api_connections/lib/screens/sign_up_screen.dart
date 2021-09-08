@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:p_08_api_connections/constants.dart';
 import 'package:p_08_api_connections/screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
+import '../constant_methods.dart';
+import 'homescreen.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -105,7 +110,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: Text('Register'),
               ),
               TextButton(
-                onPressed: gotoLoginScreen,
+                onPressed: () {
+                  kNavigate(context, 'login', '-1');
+                },
                 child: Text(
                   'goto login',
                 ),
@@ -117,16 +124,48 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  void register() {}
+  void register() async {
+    String username = usernameController.text;
+    String password = passwordController.text;
+    String firstname = firstNameController.text;
+    String lastname = lastNameController.text;
+    String email = emailController.text;
 
-  void gotoLoginScreen() {
-    Navigator.pushReplacement (
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return LoginScreen();
-        },
-      ),
+    if (username.length == 0 ||
+        password.length == 0 ||
+        firstname.length == 0 ||
+        lastname.length == 0 ||
+        email.length == 0) {
+      print('sth is null');
+      return;
+    }
+
+    // 200 <= statusCode < 300 -> everything is OK
+    // 300 <= statusCode < 400 -> redirect
+    // 400 <= statusCode < 500 -> a problem from user side
+    // 500 <= statusCode  -> a problem from server side
+    print('requested page: $kBaseUrl/api/register/');
+    http.Response response = await http.post(
+      Uri.parse('$kBaseUrl/api/register/'),
+      body: convert.json.encode({
+        'username': username,
+        'password': password,
+        'first_name': firstname,
+        'last_name': lastname,
+        'email': email,
+      }),
+      headers: {
+        "Accept": "application/json",
+        "content-type": "application/json",
+      },
     );
+    print(response.statusCode);
+    Map responseMap = convert.json.decode(response.body);
+    print(responseMap);
+    String token = await kSaveToLocal(responseMap, 'username');
+    if (token != '-1') {
+      kNavigate(context, 'home', token);
+    }
   }
+
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:p_08_api_connections/constants.dart';
 import 'package:p_08_api_connections/models/post.dart';
 
 class PostItem extends StatelessWidget {
@@ -39,7 +40,7 @@ class PostItem extends StatelessWidget {
 
   ImageProvider showImage(String image) {
     if (image.length != 0) {
-      return NetworkImage(image);
+      return NetworkImage('$kBaseUrl/media/$image');
     } //
     else {
       return AssetImage(
