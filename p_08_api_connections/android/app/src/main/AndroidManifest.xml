@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.p_08_api_connections">
    <application
-        android:label="p_08_api_connections"
+        android:label="Poster"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
