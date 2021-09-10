@@ -111,7 +111,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  kNavigate(context, 'login', '-1');
+                  kNavigate(-1, context, 'login', '-1');
                 },
                 child: Text(
                   'goto login',
@@ -162,9 +162,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     print(response.statusCode);
     Map responseMap = convert.json.decode(response.body);
     print(responseMap);
-    String token = await kSaveToLocal(responseMap, 'username');
-    if (token != '-1') {
-      kNavigate(context, 'home', token);
+    List result = await kSaveToLocal(responseMap, 'username');
+    if (result.length != 0) {
+      kNavigate(result[1], context, 'home', result[0]);
     }
   }
 

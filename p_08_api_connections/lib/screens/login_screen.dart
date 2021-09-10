@@ -73,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  kNavigate(context, 'register', '-1');
+                  kNavigate(-1, context, 'register', '-1');
                 },
                 child: Text(
                   'goto register',
@@ -116,9 +116,9 @@ class _LoginScreenState extends State<LoginScreen> {
     print(response.statusCode);
     Map responseMap = convert.json.decode(response.body);
     print(responseMap);
-    String token = await kSaveToLocal(responseMap, 'user_name');
-    if (token != '-1') {
-      kNavigate(context, 'home', token);
+    List result = await kSaveToLocal(responseMap, 'user_name');
+    if (result.length != 0) {
+      kNavigate(result[1], context, 'home', result[0]);
     }
   }
 
@@ -127,7 +127,10 @@ class _LoginScreenState extends State<LoginScreen> {
       SharedPreferences pref = await SharedPreferences.getInstance();
       if (pref.containsKey('token')) {
         String token = pref.getString('token') ?? '-1';
-        kNavigate(context, 'home', token);
+        int userId = pref.getInt('id') ?? -1;
+        if(userId != -1){
+          kNavigate(userId, context, 'home', token);
+        }
       }
     } catch (e) {
       print(e);

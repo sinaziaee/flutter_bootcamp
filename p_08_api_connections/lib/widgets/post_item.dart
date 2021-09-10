@@ -4,6 +4,7 @@ import 'package:p_08_api_connections/models/post.dart';
 
 class PostItem extends StatelessWidget {
   final Post post;
+  final bool showDeleteOption;
   final VoidCallback onDeletePressed;
   final VoidCallback onUpdatePressed;
 
@@ -11,6 +12,7 @@ class PostItem extends StatelessWidget {
     required this.post,
     required this.onDeletePressed,
     required this.onUpdatePressed,
+    required this.showDeleteOption,
   });
 
   @override
@@ -28,11 +30,14 @@ class PostItem extends StatelessWidget {
         subtitle: Text(
           post.description,
         ),
-        trailing: IconButton(
-          icon: Icon(
-            Icons.clear,
+        trailing: Visibility(
+          visible: showDeleteOption,
+          child: IconButton(
+            icon: Icon(
+              Icons.clear,
+            ),
+            onPressed: onDeletePressed,
           ),
-          onPressed: onDeletePressed,
         ),
       ),
     );

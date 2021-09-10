@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/homescreen.dart';
 import 'screens/sign_up_screen.dart';
 
-Future<String> kSaveToLocal(Map map, String usernameKey) async {
+Future<List> kSaveToLocal(Map map, String usernameKey) async {
   try {
     SharedPreferences pref = await SharedPreferences.getInstance();
     await pref.setString('username', map[usernameKey]);
@@ -14,21 +14,21 @@ Future<String> kSaveToLocal(Map map, String usernameKey) async {
         'fullname', '${map['first_name']} ${map['last_name']}');
     String token = 'Token ${map['token']}';
     await pref.setString('token', token);
-    return token;
+    return [token, map['id']];
   } catch (e) {
     print(e);
-    return '-1';
+    return [];
   }
 }
 
-void kNavigate(BuildContext context, String type, String token) {
+void kNavigate(int user_id, BuildContext context, String type, String token) {
   Navigator.pushReplacement(
     context,
     MaterialPageRoute(
       builder: (context) {
         if (type == 'home') {
           return HomeScreen(
-            token: token,
+            token: token, userId: user_id,
           );
         }
         else if (type == 'login'){
