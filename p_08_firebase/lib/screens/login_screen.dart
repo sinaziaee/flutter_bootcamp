@@ -20,40 +20,49 @@ class _LoginScreenState extends State<LoginScreen> {
         title: const Text('Login'),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 45,
-              child: TextField(
-                controller: phoneController,
-                decoration: kMyInputDecoration.copyWith(
-                  hintText: 'Phone No.',
-                ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+          ),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 20,
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Visibility(
-              visible: isWaitingForCode,
-              child: SizedBox(
+              SizedBox(
                 height: 45,
                 child: TextField(
-                  controller: valCodeController,
+                  controller: phoneController,
                   decoration: kMyInputDecoration.copyWith(
-                    hintText: 'Code',
+                    hintText: 'Phone No.',
                   ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 40,
-            ),
-            ElevatedButton(
-              onPressed: onButtonPressed,
-              child: Text(isWaitingForCode ? 'Send Code' : 'Submit'),
-            ),
-          ],
+              const SizedBox(
+                height: 20,
+              ),
+              Visibility(
+                visible: isWaitingForCode,
+                child: SizedBox(
+                  height: 45,
+                  child: TextField(
+                    controller: valCodeController,
+                    decoration: kMyInputDecoration.copyWith(
+                      hintText: 'Code',
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              ElevatedButton(
+                onPressed: onButtonPressed,
+                child: Text(!isWaitingForCode ? 'Send Code' : 'Submit'),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -63,11 +72,10 @@ class _LoginScreenState extends State<LoginScreen> {
     String phone = phoneController.text;
     String code = valCodeController.text;
     // send code to phone
-    if(isWaitingForCode == false){
-
+    if (isWaitingForCode == false) {
     } // do login with the sent code
     else {
-      
+
     }
   }
 }
