@@ -21,12 +21,11 @@ class HomeScreen extends StatelessWidget {
           ),
           IconButton(
             onPressed: () async {
-              await auth.signOut();
               kNavigate(context, 'chat');
             },
             icon: const Icon(
               Icons.message,
-              color: Colors.red,
+              color: Colors.white,
             ),
           ),
         ],

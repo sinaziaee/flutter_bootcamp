@@ -11,7 +11,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController phoneController = TextEditingController();
+  // TextEditingController phoneController = TextEditingController();
 
   TextEditingController valCodeController = TextEditingController();
 
@@ -19,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String myVerificationId = '-1';
 
   FirebaseAuth auth = FirebaseAuth.instance;
+  String phoneField = '';
 
   @override
   void initState() {
@@ -53,7 +54,10 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 height: 45,
                 child: TextField(
-                  controller: phoneController,
+                  // controller: phoneController,
+                  onChanged: (val){
+                    phoneField = val;
+                  },
                   decoration: kMyInputDecoration.copyWith(
                     hintText: 'Phone No.',
                   ),
@@ -90,7 +94,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   onButtonPressed() async {
-    String phone = phoneController.text;
+    // String phone = phoneController.text;
+    String phone = phoneField;
     String code = valCodeController.text;
 
     // send code to phone
