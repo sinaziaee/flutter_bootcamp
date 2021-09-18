@@ -6,3 +6,5 @@ final kMyInputDecoration = InputDecoration(
   ),
   contentPadding: const EdgeInsets.symmetric(horizontal: 10),
 );
+
+const String kMyPhoneNumber = '+11111111111';
